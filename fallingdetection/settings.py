@@ -17,6 +17,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1','falling-detection.herokuapp.com']
 
+CSRF_TRUSTED_ORIGINS = ['https://falling-detection.herokuapp.com']
 
 # Application definition
 
