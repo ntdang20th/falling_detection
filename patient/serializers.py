@@ -32,4 +32,4 @@ class DeviceSerializer(serializers.ModelSerializer):
     patient = PatientSerializer(read_only=True)
     class Meta:
         model = Device
-        fields = ['uuid', 'patient']
+        fields = ['uuid', 'patient', 'crutch']

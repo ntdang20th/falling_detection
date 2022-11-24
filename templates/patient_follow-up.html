@@ -1,6 +1,5 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static jazzmin %}
-
 {% block bodyclass %}{{ block.super }} dashboard{% endblock %}
 
 {% block content_title %}
@@ -15,8 +14,6 @@
 </div>
 <script>
     const list_UUID = [];
-    const list_graph_data = [];
-    const list_chart = [];
 
     var url = 'wss://falling-detection.herokuapp.com/ws/sensor/'
     //var url = 'ws://127.0.0.1:8000/ws/sensor/'
@@ -41,34 +38,15 @@
     }
 
     function addData(data) {
-      var flag = false;
       var uuid = data['device']['uuid'];
       if(!list_UUID.includes(uuid)){
-        flag = true;
         list_UUID.push(uuid);
         var col = `
-            <div style="width:800px;height:500px;" class = "col" id="`+uuid+`">
+            <div style="width:800px;height:500px;" class = "col-xl-6" id="`+uuid+`">
             </div>
         `
         document.getElementById('mainContent').innerHTML += col;
         console.log(col);
-
-        var graphData = {
-          type: 'line',
-          data: {
-              labels: ['-5', '-4', '-3', '-2', '-1', 'Now'],
-              datasets: [{
-                  label: '# of Votes',
-                  data: [120, -90, 30, -50, 20, -30],
-                  backgroundColor: [
-                      'rgba(73, 198, 230, 0.5)',
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          option:{}
-        }
-        list_graph_data.push(graphData);
       }
 
       var acc = data['acceleration'];
@@ -96,7 +74,7 @@
             <hr>
 
             <div class="row">
-              <div class="col-5">
+              <div class="col-9">
                 <table class="table">
                   <thead>
                     <tr>
@@ -109,19 +87,19 @@
 
                   <tbody>
                     <tr>
-                      <td>${acc.name}</td>
+                      <td>Acceleration</td>
                       <td><code>${acc.valueX.toFixed(2)}</code></td>
                       <td><code>${acc.valueY.toFixed(2)}</code></td>
                       <td><code>${acc.valueZ.toFixed(2)}</code></td>
                     </tr>
                     <tr>
-                      <td>${gyr.name}</td>
+                      <td>Gyroscope</td>
                       <td><code>${gyr.valueX.toFixed(2)}</code></td>
                       <td><code>${gyr.valueY.toFixed(2)}</code></td>
                       <td><code>${gyr.valueZ.toFixed(2)}</code></td>
                     </tr>
                     <tr>
-                      <td>${rot.name}</td>
+                      <td>Ratation</td>
                       <td><code>${rot.rotationX.toFixed(2)}</code></td>
                       <td><code>${rot.rotationY.toFixed(2)}</code></td>
                       <td><code>${rot.rotationZ.toFixed(2)}</code></td>
@@ -130,44 +108,14 @@
                 </table>
               </div>
 
-              <div class="col-7">
-                <canvas id="chart_`+uuid+`"></canvas>
+              <div class="col-3">
+                <img src="{% static 'images/crutch${data.device["crutch"]}.png' %}"></img>
               </div>
             </div>
           </div>
         </div>
-
             `
       document.getElementById(uuid).innerHTML = html;  //add content
-
-      if(flag){
-        var ctx = document.getElementById('chart_' + uuid).getContext('2d');
-        var myChart = new Chart(ctx, graphData);
-        list_chart.push(myChart);
-      }
-
-      //draw(uuid, gyr);
-
-    }
-
-    function draw(uuid, gyr){
-
-      var index = list_UUID.indexOf(uuid);
-      var chartT = list_chart[index];
-
-      var grData = list_graph_data[index];
-      //console.log(grData);
-
-      var new_graph_data = grData.data.datasets[0].data;
-      //console.log(new_graph_data)
-
-      new_graph_data.shift();
-      new_graph_data.push(parseInt(gyr.valueX));
-      grData.data.datasets[0].data = new_graph_data;
-
-      console.log(new_graph_data);
-      console.log(chartT);
-      chartT.update();
     }
 
     document.getElementById('content').innerHTML+='</div></div>';
