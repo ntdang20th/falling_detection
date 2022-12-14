@@ -39,7 +39,7 @@ class HasPatientFamiliar(models.Model):
 
 
 class Device(models.Model):
-    crutch_type = ((0, 'crutch1.png'), (1, 'crutch2.png'))
+    crutch_type = ((0, 'crutch1'), (1, 'crutch2'))
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
     uuid = models.CharField(max_length=128, default='')
     description = models.TextField(max_length=255, default='')

@@ -1,6 +1,10 @@
 import datetime
 import json
+import os
+import pickle
+import shutil
 
+import Orange
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.shortcuts import render
@@ -12,6 +16,10 @@ from device.serializers import RawdataSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from django.contrib.staticfiles.storage import staticfiles_storage
+
+from fallingdetection.settings import STATIC_ROOT
+
 
 # Create your views here.
 
@@ -72,9 +80,19 @@ def ResponesData(request):
     serializer = RawdataSerializer(rawdata)
     data =JSONRenderer().render(serializer.data)
 
+    modlue = pickle.load(open(os.path.join(STATIC_ROOT, 'modules/walking_aid.pkcls'), 'rb'))
+
+    shutil.copy(os.path.join(STATIC_ROOT, 'modules/template.tab'), os.path.join(STATIC_ROOT, 'modules/temp.tab'))
+    with open(os.path.join(STATIC_ROOT, 'modules/temp.tab'), "a") as myfile:
+        myfile.write("\t2\t3\t4\t5\t6\t7")
+
+    pre = Orange.data.Table(os.path.join(STATIC_ROOT, 'modules/temp.tab'))
+
+    os.remove(os.path.join(STATIC_ROOT, 'modules/temp.tab'))
+
+    print(modlue(pre))
 
     channel_layer = get_channel_layer()
-
     async_to_sync(channel_layer.group_send)(
         'sensor_consumer_group', {
             'type': 'send_rawdata',

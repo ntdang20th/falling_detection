@@ -15,8 +15,8 @@
 <script>
     const list_UUID = [];
 
-    var url = 'wss://falling-detection.herokuapp.com/ws/sensor/'
-    //var url = 'ws://127.0.0.1:8000/ws/sensor/'
+    //var url = 'wss://falling-detection.herokuapp.com/ws/sensor/'
+    var url = 'ws://127.0.0.1:8000/ws/sensor/'
 
     var socket = new WebSocket(url);
 
@@ -48,7 +48,7 @@
         document.getElementById('mainContent').innerHTML += col;
         console.log(col);
       }
-
+      var fullname = data.device.patient.patient_info['last_name']+' ' + data.device.patient.patient_info['first_name'];
       var acc = data['acceleration'];
       var gyr = data['gyroscope'];
       var rot = data['rotation'];
@@ -57,18 +57,21 @@
         <div class="card">
           <div class="card-body">
             <div class="row">
-              <div class="col-4">
-                <p class="card-text"><span class="text-success">Mã BN: </span> ${data.device.patient.patient_info['last_name']}</p>
-                <p class="card-text"><span class="text-success">Họ tên: </span>${data.device.patient.patient_info['first_name']}</p>
-                <p class="card-text"><span class="text-success">Đ/c: </span>${data.device.patient.patient_info.share_address['address']}
-                                                                            ${data.device.patient.patient_info.share_address.ward['name']}
-                                                                            ${data.device.patient.patient_info.share_address.district['name']}</p>
-              </div>
-              <div class="col-8">
-                <p class="card-text"><span class="text-success">UUID: </span><code>${data.device['uuid']}</code></p>
-                <p class="card-text"><span class="text-success">Date: </span><code>${data.date}</code></p>
-                <p class="card-text"><span class="text-success">Touch: </span><code>${data.touch_status['status_name']}</code></p>
-              </div>
+                <table>
+                    <tr>
+                        <td><p class="card-text"><span class="text-success">Họ tên: </span> `+fullname+` </p></td>
+                        <td><p  style="overflow:hidden;" class="card-text"><span class="text-success">UUID: </span><code>`+uuid+`</code></p></td>
+                    </tr>
+                    <tr>
+                        <td><p class="card-text"><span class="text-success">Tình trạng: </span><span class="rounded-lg p-3 mb-2 text-primary">`+fullname+`</span></p></td>
+                        <td><p class="card-text"><span class="text-success">Location: </span><code>unknown</code></p></td>
+                    </tr>
+                    <tr>
+                        <td><p style="overflow:hidden; word-wrap: break-word;" class="card-text"><span class="text-success">Đ/c: </span>${data.device.patient.patient_info.share_address['address']}
+                                                                            ${data.device.patient.patient_info.share_address.ward['name']} `+'...'+`</p></td>
+                        <td><p class="card-text"><span class="text-success">Touch: </span><code>${data.touch_status['status_name']}</code></p></td>
+                    </tr>
+                </table>
             </div>
 
             <hr>
@@ -109,13 +112,18 @@
               </div>
 
               <div class="col-3">
-                <img src="{% static 'images/crutch${data.device["crutch"]}.png' %}"></img>
+                <img id="image`+uuid+`"></img>
               </div>
             </div>
           </div>
         </div>
             `
+
       document.getElementById(uuid).innerHTML = html;  //add content
+      var s = "{% static 'images/crutch1.png'%}";
+      if(data.device['crutch'] == 1)
+        s = "{% static 'images/crutch2.png'%}";
+      document.getElementById("image"+uuid).src = s;
     }
 
     document.getElementById('content').innerHTML+='</div></div>';

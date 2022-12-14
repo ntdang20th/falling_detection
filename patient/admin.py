@@ -7,7 +7,7 @@ from doctor.models import Doctor
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'uuid', 'patient', 'description', 'is_active']
+    list_display = ['id', 'uuid', 'patient', 'crutch', 'description', 'is_active']
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
